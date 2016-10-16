@@ -1,7 +1,13 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <title>Micro Blog</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<link rel = "stylesheet" type = "text/css" href = "http://micro-blog.dev/style/microBlogStyle.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
     <!--
      - Include you stylesheets and javascripts in here
@@ -11,9 +17,15 @@
 
   </head>
   <body>
-    <h1>Micro Blog</h1>
-
-    <!--
+	<div class="container-fluid">
+		<header>
+			{{ header | raw }}
+		</header>
+		{{ body | raw }}
+		<footer>Copyright © W3Schools.com</footer>
+	</div>
+    
+    	<!--
       TODO: Build the front-end for the micro-blog using a front-end framework
             of your choice.
 

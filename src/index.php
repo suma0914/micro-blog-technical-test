@@ -3,7 +3,10 @@
 // Silex documentation: http://silex.sensiolabs.org/doc/
 
 require_once __DIR__.'/../vendor/autoload.php';
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+require_once 'HeaderClass.class.php';
+require_once 'BodyClass.class.php';
 $app = new Silex\Application();
 
 $app['debug'] = true;
@@ -49,10 +52,13 @@ $app->get('/api/posts', function() use($app) {
 });
 
 $app->get('/api/posts/user/{user_id}', function($user_id) use($app) {
+    $headerInstance = new HeaderClass();
+    $header = $headerInstance->getPageHeader();
     $sql = "SELECT rowid, * FROM posts WHERE user_id = ?";
     $posts = $app['db']->fetchAll($sql, array((int) $user_id));
-
-    return $app->json($posts, 200);
+    $bodyInstance = new BodyClass();
+    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200));
+    return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
 $app->get('/api/posts/id/{post_id}', function($post_id) use($app) {
@@ -79,7 +85,13 @@ TODO: Build front-end of web app in the / endpoint below - Add more
 */
 
 $app->get('/', function() use($app) {
-  return $app['twig']->render('index.twig');
+	$headerInstance = new HeaderClass();
+	$header = $headerInstance->getPageHeader();
+	$subRequest = Request::create('/api/posts');
+	$response = $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
+	$bodyInstance = new BodyClass();
+	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $response);
+  return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
 
