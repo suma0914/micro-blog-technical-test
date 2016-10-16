@@ -62,10 +62,13 @@ $app->get('/api/posts/user/{user_id}', function($user_id) use($app) {
 });
 
 $app->get('/api/posts/id/{post_id}', function($post_id) use($app) {
-  $sql = "SELECT rowid, * FROM posts WHERE rowid = ?";
-  $post = $app['db']->fetchAssoc($sql, array((int) $post_id));
-
-  return $app->json($post, 200);
+    $headerInstance = new HeaderClass();
+    $header = $headerInstance->getPageHeader();
+    $sql = "SELECT rowid, * FROM posts WHERE rowid = ?";
+    $post = $app['db']->fetchAssoc($sql, array((int) $post_id));
+    $bodyInstance = new BodyClass();
+    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post);
+    return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
 $app->post('/api/posts/new', function (Request $request) {
