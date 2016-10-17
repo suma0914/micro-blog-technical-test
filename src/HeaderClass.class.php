@@ -2,12 +2,12 @@
 <?php
 class HeaderClass 
 {
-    public function getPageHeader()
+    public function getPageHeader($session)
     {
-        if(isset($_SESSION['logged_in']))
+        if($session->get('logged_in') !== null)
         {
-            $user = unserialize($_SESSION['user']);
-            $output = "<button type='button' class='button header'>$user</button>";
+        	$output = "<button class='button header' type='button' id = 'account-button' onclick = 'showOptions()'>username</button>
+		   ";
 	}
 	else
 	{

@@ -31,6 +31,10 @@ class BodyClass
 		{
 			$output = $output . "<div style='background: #4CAF50'><h3>" . $response['content'] . "</h3><h5><a href='http://micro-blog.dev/api/posts/user/" . $response['user_id'] ."'>" . $response['user_id'] . "</a></h5><h5>" . $response['date'] . "</h5></div><br/>";
 		}
+		else
+		{
+			$output = "<h2> 404 - Page not found </h2>";
+		}
 		return $output;
 	}
 }
