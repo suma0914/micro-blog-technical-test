@@ -5,10 +5,10 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-	<link rel = "stylesheet" type = "text/css" href = "http://micro-blog.dev/style/microBlogStyle.css" />
+    <link rel = "stylesheet" type = "text/css" href = "http://micro-blog.dev/style/microBlogStyle.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
+    <script src="http://micro-blog.dev/scripts/microblogscripts.js"></script>
     <!--
      - Include you stylesheets and javascripts in here
      - Load from /assets/javascripts and /assets/stylesheets  
@@ -17,12 +17,22 @@
 
   </head>
   <body>
-	<div class="container-fluid">
+	<div class="container-fluid" id='main-div'>
 		<header>
 			{{ header | raw }}
 		</header>
 		{{ body | raw }}
 		<footer>Copyright © W3Schools.com</footer>
+	</div>
+	<div id='register-dialog' title='Register' style = 'visibility:hidden'>
+		<form onsubmit = 'return comparePasswords()' action = 'http://micro-blog.dev/api/register' method='post'>
+			<h5 id = 'username'>Username</h5>&nbsp;&nbsp;<input type = 'text' id = 'usernameValue'/><br/>
+			<h5 id = 'password'>Password</h5>&nbsp;&nbsp;<input type = 'password' id = 'passwordValue'/><br/>
+			<h5 id = 'passwordRepeat'>Repeat Password</h5>&nbsp;&nbsp;<input type = 'password' id = 'passwordRepeatValue'/><br/><br/>
+			<h6 id = 'error' style = "visibility:hidden; color:red;">* Please enter correct passwords</h6>
+			<input type = 'submit' value = 'Submit'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href = 'http://micro-blog.dev/'><input type = 'button' value = 'Cancel'/></a><br/>
+		</form>
 	</div>
     
     	<!--
