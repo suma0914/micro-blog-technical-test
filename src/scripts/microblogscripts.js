@@ -5,6 +5,13 @@ function displayRegisterDialog()
 	//document.body.innerHTML = document.getElementById("register-dialog");
 }
 
+function displayLoginDialog()
+{
+	document.getElementById("main-div").style.visibility = "hidden";
+	document.getElementById("login-dialog").style.visibility = "visible";
+	//document.body.innerHTML = document.getElementById("register-dialog");
+}
+
 function comparePasswords()
 {
 	var user = document.getElementById("usernameValue").value;

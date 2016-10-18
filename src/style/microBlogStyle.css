@@ -32,8 +32,21 @@ div {
     position:fixed;
     top: 50%;
     left: 50%;
-    width:20em;
-    height:22em;
+    width:17em;
+    height:20em;
+    margin-top: -9em; /*set to a negative number 1/2 of your height*/
+    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+    /*border: 1px solid #ccc;*/
+    background-color: #f3f3f3;
+    visibility:hidden;
+}
+
+#login-dialog {
+    position:fixed;
+    top: 50%;
+    left: 50%;
+    width:17em;
+    height:20em;
     margin-top: -9em; /*set to a negative number 1/2 of your height*/
     margin-left: -15em; /*set to a negative number 1/2 of your width*/
     /*border: 1px solid #ccc;*/

@@ -1,5 +1,4 @@
 <?php
-
 // Silex documentation: http://silex.sensiolabs.org/doc/
 
 require_once __DIR__.'/../vendor/autoload.php';
@@ -109,19 +108,47 @@ $app->post('/api/register', function (Request $request) use($app, $session) {
 	{
 		$app['db']->insert('users', array('username' => $username, 'password' => $password));
 		$session->set('user', $username);
+		$session->set('user_id', $user['id']);
 		$session->set('logged_in', 1);
 		return $app->redirect('/');
-		//$app->redirect('/');
-			//return new RedirectResponse('http://micro-blog.dev/');
-		//$headerInstance = new HeaderClass();
-		//$header = $header . $headerInstance->getPageHeader();
-		//$subRequest = Request::create('/');
-		//$response = $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
-		//return $app->get('/');
-		//$bodyInstance = new BodyClass();
-		//$body = $bodyInstance->getPageBody('/api/posts', $response);
-		//$_SERVER['REQUEST_URI'] = '/api/posts';
-	  	//return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	}
+	catch (Exception $e)
+	{
+		$bodyInstance = new BodyClass();
+		$body = $bodyInstance->getRegisterFailureBody("user already exists");
+		return $app['twig']->render('index.twig', array('header' => '', 'body' => $body));
+	}
+});
+
+$app->post('/api/login', function (Request $request) use($app, $session) {
+	$username = $_POST["usernameValue"];
+	$password = md5($_POST["passwordValue"]);
+	$sql = "SELECT * FROM users WHERE username = ?";
+	$user = $app['db']->fetchAssoc($sql, array((string) $username));
+	try
+	{
+		if($user['username'] !== null || $user['password'] !== null)
+		{
+			if(strcmp($username, $user['username']) == 0 && strcmp($password, $user['password']) == 0)
+			{
+				$session->set('user', $username);
+				$session->set('user_id', $user['id']);
+				$session->set('logged_in', 1);
+				return $app->redirect('/');
+			}
+			else
+			{
+				$bodyInstance = new BodyClass();
+				$body = $bodyInstance->getLoginFailureBody("incorrect password");
+				return $app['twig']->render('index.twig', array('header' => '', 'body' => $body));
+			}
+		}
+		else
+		{
+			$bodyInstance = new BodyClass();
+			$body = $bodyInstance->getLoginFailureBody("user doesn't exist");
+			return $app['twig']->render('index.twig', array('header' => '', 'body' => $body));
+		}
 	}
 	catch (Exception $e)
 	{
@@ -132,8 +159,24 @@ $app->post('/api/register', function (Request $request) use($app, $session) {
 });
 
 
-$app->post('/api/posts/new', function (Request $request) {
+$app->post('/api/posts/new', function (Request $request) use($app, $session) {
   //TODO
+	if($_POST['content'] == null || strcmp(trim($_POST['content']), '') == 0)
+	{
+		$headerInstance = new HeaderClass();
+		$header = $_POST['content'] . $headerInstance->getPageHeader($session);
+		$bodyInstance = new BodyClass();
+		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], '');
+		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	}
+	else
+	{
+		$time = date_timestamp_get(date_create());
+		$app['db']->insert('posts', array('content' => $_POST['content'], 'user_id' => $session->get('user_id'), 'date' => "" . $time));
+		$sql = "SELECT rowid FROM posts WHERE date = ?";
+    		$post = $app['db']->fetchAssoc($sql, array((string) $time));
+		return $app->redirect('/api/posts/id/' . $post['rowid']);
+	}
 });
 
 
@@ -152,14 +195,14 @@ $app->get('/', function() use($app, $session) {
 	//$sql = "drop table users";
 	//$post = $app['db']->executeQuery($sql);
     	$headerInstance = new HeaderClass();
-	//$header = '$_SESSION[logged_in] - ' . $session->get('logged_in') . "<br/>";
-	$header = $header . $headerInstance->getPageHeader($session);
+	$header = $headerInstance->getPageHeader($session);
 	$subRequest = Request::create('/api/posts');
 	$response = $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
 	$bodyInstance = new BodyClass();
 	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $response);
-  return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+  	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
 
 $app->run();
+?>
