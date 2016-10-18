@@ -85,7 +85,7 @@ $app->get('/api/posts/user/{user_id}', function($user_id) use($app, $session) {
     $sql = "SELECT rowid, * FROM posts WHERE user_id = ?";
     $posts = $app['db']->fetchAll($sql, array((int) $user_id));
     $bodyInstance = new BodyClass();
-    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200));
+    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
     return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
@@ -95,7 +95,7 @@ $app->get('/api/posts/id/{post_id}', function($post_id) use($app, $session) {
     $sql = "SELECT rowid, * FROM posts WHERE rowid = ?";
     $post = $app['db']->fetchAssoc($sql, array((int) $post_id));
     $bodyInstance = new BodyClass();
-    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post);
+    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post, $session);
     return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
@@ -166,7 +166,7 @@ $app->post('/api/posts/new', function (Request $request) use($app, $session) {
 		$headerInstance = new HeaderClass();
 		$header = $_POST['content'] . $headerInstance->getPageHeader($session);
 		$bodyInstance = new BodyClass();
-		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], '');
+		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], '', $session);
 		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 	}
 	else
@@ -179,6 +179,51 @@ $app->post('/api/posts/new', function (Request $request) use($app, $session) {
 	}
 });
 
+$app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session) {
+	$headerInstance = new HeaderClass();
+	$header = $headerInstance->getPageHeader($session);
+	$bodyInstance = new BodyClass();
+	if($_POST['content'] == null || strcmp(trim($_POST['content']), '') == 0)
+	{
+	    	$sql = "SELECT rowid,* FROM posts WHERE rowid = ?";
+	    	$posts = $app['db']->fetchAssoc($sql, array((string) $post_id));
+		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $posts, $session);
+	  	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	}
+	else
+	{
+		$sql = "update posts set content = ? where rowid = ?";
+		$posts = $app['db']->executeQuery($sql, array((string) $_POST['content'], (string) $post_id));
+		return $app->redirect('/api/posts/id/' . $post_id);
+	}
+});
+
+$app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session) {
+	$headerInstance = new HeaderClass();
+	$header = $headerInstance->getPageHeader($session);
+	$bodyInstance = new BodyClass();
+	if($session->get('user') == null)
+	{
+		$sql = "SELECT rowid, * FROM posts WHERE user_id = ?";
+    		$posts = $app['db']->fetchAll($sql, array((int) $user_id));
+		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
+		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	}
+	else
+	{
+		$sql = "delete FROM posts WHERE rowid = :id";
+		$preparedStatement = $app['db']->prepare($sql);
+		$preparedStatement->execute(array(':id' => $user_id));
+		$session->set('user', null);
+		return $app->redirect('/api/posts/delete/' . $session->get('user_id'));
+	}
+});
+
+
+$app->get('/api/logout', function() use($app, $session) {
+	session_unset();
+	return $app->redirect('/');
+});
 
 
 /* ------- micro-blog web app ---------
@@ -199,7 +244,7 @@ $app->get('/', function() use($app, $session) {
 	$subRequest = Request::create('/api/posts');
 	$response = $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
 	$bodyInstance = new BodyClass();
-	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $response);
+	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $response, $session);
   	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
