@@ -30,7 +30,6 @@
     border-radius: 4px;
 }
 
-
 .header{float: right;}
 
 header, footer {
@@ -53,7 +52,6 @@ div {
     height:22em;
     margin-top: -9em; /*set to a negative number 1/2 of your height*/
     margin-left: -11em; /*set to a negative number 1/2 of your width*/
-    /*border: 1px solid #ccc;*/
     background-color: #f3f3f3;
     visibility:hidden;
 }
@@ -66,40 +64,11 @@ div {
     height:20em;
     margin-top: -9em; /*set to a negative number 1/2 of your height*/
     margin-left: -15em; /*set to a negative number 1/2 of your width*/
-    /*border: 1px solid #ccc;*/
     background-color: #f3f3f3;
     visibility:hidden;
 }
-
-.ui-widget-header,.ui-state-default, ui-button{
-            background:#b9cd6d;
-            border: 1px solid #b9cd6d;
-            color: #FFFFFF;
-            font-weight: bold;
-         }
-/*input
-{
-  -moz-border-radius: 15px;
- 	border-radius: 15px;
-    border:solid 1px black;
-    padding:5px;
-}*/
 
 a:link {
     color: #494c4a;
 }
 
-/* visited link */
-a:visited {
-    color: #494c4a;
-}
-
-/* mouse over link */
-a:hover {
-    color: #494c4a;
-}
-
-/* selected link */
-a:active {
-    color: #494c4a;
-}

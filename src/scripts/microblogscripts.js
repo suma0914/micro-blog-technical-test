@@ -2,14 +2,12 @@ function displayRegisterDialog()
 {
 	document.getElementById("main-div").style.visibility = "hidden";
 	document.getElementById("register-dialog").style.visibility = "visible";
-	//document.body.innerHTML = document.getElementById("register-dialog");
 }
 
 function displayLoginDialog()
 {
 	document.getElementById("main-div").style.visibility = "hidden";
 	document.getElementById("login-dialog").style.visibility = "visible";
-	//document.body.innerHTML = document.getElementById("register-dialog");
 }
 
 function comparePasswords()
@@ -39,11 +37,15 @@ function editBlogPost()
     document.getElementById("update-blog").submit();
 }
 
-function countChar(val) {
-        var len = val.value.length;
-        if (len >= 20) {
-          val.value = val.value.substring(0, 500);
-        } else {
-          $('#content').text(20- len);
-        }
-      };
+function countChar(val)
+{
+	var len = val.value.length;
+    if (len >= 20)
+	{
+		val.value = val.value.substring(0, 500);
+    }
+	else
+	{
+		$('#content').text(20- len);
+    }
+}

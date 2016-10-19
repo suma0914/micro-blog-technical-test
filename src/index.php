@@ -1,6 +1,4 @@
 <?php
-// Silex documentation: http://silex.sensiolabs.org/doc/
-
 require_once __DIR__.'/../vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -16,15 +14,8 @@ if(!$session->isStarted())
 	$session->start();
 }
 
-
 $app = new Silex\Application();
-
 $app['debug'] = true;
-
-/* SQLite config
-
-TODO: Add a users table to sqlite db
-*/
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => array(
@@ -37,7 +28,6 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/views',
 ));
-
 
 /* ------- micro-blog api ---------
 
@@ -54,9 +44,7 @@ TODO: Error checking - e.g. if try retrieve posts for a user_id that does
       Extra: Improve on current API code where you see necessary
 */
 
-
 //create users table is it doesn't exist
-
 
 $schema = $app['db']->getSchemaManager();
 if (!$schema->tablesExist('users'))
@@ -68,38 +56,39 @@ if (!$schema->tablesExist('users'))
 	$users->addUniqueIndex(array('username'));
 	$users->addColumn('password', 'string', array('length' => 255));
 	$schema->createTable($users);
-	//$_SESSION['table'] = "created";
 }
 
-
-$app->get('/api/posts', function() use($app) {
-    $sql = "SELECT rowid, * FROM posts order by date desc";
-    $posts = $app['db']->fetchAll($sql);
-
-    return $app->json($posts, 200);
+$app->get('/api/posts', function() use($app)
+{
+	$sql = "SELECT rowid, * FROM posts order by date desc";
+	$posts = $app['db']->fetchAll($sql);
+	return $app->json($posts, 200);
 });
 
-$app->get('/api/posts/user/{user_id}', function($user_id) use($app, $session) {
-    $headerInstance = new HeaderClass();
-    $header = $headerInstance->getPageHeader($session);
-    $sql = "SELECT rowid, * FROM posts WHERE user_id = ?  order by date desc";
-    $posts = $app['db']->fetchAll($sql, array((int) $user_id));
-    $bodyInstance = new BodyClass();
-    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
-    return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+$app->get('/api/posts/user/{user_id}', function($user_id) use($app, $session)
+{
+	$headerInstance = new HeaderClass();
+	$header = $headerInstance->getPageHeader($session);
+	$sql = "SELECT rowid, * FROM posts WHERE user_id = ?  order by date desc";
+	$posts = $app['db']->fetchAll($sql, array((int) $user_id));
+	$bodyInstance = new BodyClass();
+	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
+	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
-$app->get('/api/posts/id/{post_id}', function($post_id) use($app, $session) {
-    $headerInstance = new HeaderClass();
-    $header = $headerInstance->getPageHeader($session);
-    $sql = "SELECT rowid, * FROM posts WHERE rowid = ?  order by date desc";
-    $post = $app['db']->fetchAssoc($sql, array((int) $post_id));
-    $bodyInstance = new BodyClass();
-    $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post, $session);
-    return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+$app->get('/api/posts/id/{post_id}', function($post_id) use($app, $session)
+{
+	$headerInstance = new HeaderClass();
+	$header = $headerInstance->getPageHeader($session);
+	$sql = "SELECT rowid, * FROM posts WHERE rowid = ?  order by date desc";
+	$post = $app['db']->fetchAssoc($sql, array((int) $post_id));
+	$bodyInstance = new BodyClass();
+	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post, $session);
+	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
 
-$app->post('/api/register', function (Request $request) use($app, $session) {
+$app->post('/api/register', function (Request $request) use($app, $session)
+{
 	$username = $_POST["usernameValue"];
 	$password = md5($_POST["passwordValue"]);
 	$sql = "SELECT * FROM users WHERE username = ?";
@@ -120,7 +109,8 @@ $app->post('/api/register', function (Request $request) use($app, $session) {
 	}
 });
 
-$app->post('/api/login', function (Request $request) use($app, $session) {
+$app->post('/api/login', function (Request $request) use($app, $session)
+{
 	$username = $_POST["usernameValue"];
 	$password = md5($_POST["passwordValue"]);
 	$sql = "SELECT * FROM users WHERE username = ?";
@@ -158,9 +148,8 @@ $app->post('/api/login', function (Request $request) use($app, $session) {
 	}
 });
 
-
-$app->post('/api/posts/new', function (Request $request) use($app, $session) {
-  //TODO
+$app->post('/api/posts/new', function (Request $request) use($app, $session)
+{
 	if($_POST['content'] == null || strcmp(trim($_POST['content']), '') == 0)
 	{
 		$headerInstance = new HeaderClass();
@@ -174,12 +163,13 @@ $app->post('/api/posts/new', function (Request $request) use($app, $session) {
 		$time = date_timestamp_get(date_create());
 		$app['db']->insert('posts', array('content' => $_POST['content'], 'user_id' => $session->get('user_id'), 'date' => "" . $time));
 		$sql = "SELECT rowid FROM posts WHERE date = ?";
-    		$post = $app['db']->fetchAssoc($sql, array((string) $time));
+   		$post = $app['db']->fetchAssoc($sql, array((string) $time));
 		return $app->redirect('/api/posts/id/' . $post['rowid']);
 	}
 });
 
-$app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session) {
+$app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session)
+{
 	$headerInstance = new HeaderClass();
 	$header = $headerInstance->getPageHeader($session);
 	$bodyInstance = new BodyClass();
@@ -187,8 +177,8 @@ $app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session) {
 	{
 	    	$sql = "SELECT rowid,* FROM posts WHERE rowid = ?";
 	    	$posts = $app['db']->fetchAssoc($sql, array((string) $post_id));
-		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $posts, $session);
-	  	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+			$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $posts, $session);
+			return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 	}
 	else
 	{
@@ -198,14 +188,15 @@ $app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session) {
 	}
 });
 
-$app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session) {
+$app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session)
+{
 	$headerInstance = new HeaderClass();
 	$header = $headerInstance->getPageHeader($session);
 	$bodyInstance = new BodyClass();
 	if($session->get('flag') == null)
 	{
 		$sql = "SELECT rowid, * FROM posts WHERE user_id = ?  order by date desc";
-    		$posts = $app['db']->fetchAll($sql, array((int) $user_id));
+    	$posts = $app['db']->fetchAll($sql, array((int) $user_id));
 		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
 		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 	}
@@ -219,27 +210,15 @@ $app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session) 
 	}
 });
 
-
-$app->get('/api/logout', function() use($app, $session) {
+$app->get('/api/logout', function() use($app, $session)
+{
 	session_unset();
 	return $app->redirect('/');
 });
 
-
-/* ------- micro-blog web app ---------
-
-All Endpoints for micro-blog web app below.
-
-TODO: Build front-end of web app in the / endpoint below - Add more
-      endpoints if you like.
- 
-      See TODO in index.twig for more instructions / suggestions
-*/
-
-$app->get('/', function() use($app, $session) {
-	//$sql = "drop table users";
-	//$post = $app['db']->executeQuery($sql);
-    	$headerInstance = new HeaderClass();
+$app->get('/', function() use($app, $session)
+{
+   	$headerInstance = new HeaderClass();
 	$header = $headerInstance->getPageHeader($session);
 	$subRequest = Request::create('/api/posts');
 	$response = $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
