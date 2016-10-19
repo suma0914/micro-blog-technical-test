@@ -154,7 +154,7 @@ $app->post('/api/login', function (Request $request) use($app, $session) {
 	{
 		$headerInstance = new HeaderClass();
 		$header = $header . $headerInstance->getPageHeader($session);
-		return $app['twig']->render('error.twig', array('header' => $header, 'body' => $e->getMessage()));
+		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $e->getMessage()));
 	}
 });
 

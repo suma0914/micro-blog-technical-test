@@ -26,15 +26,14 @@ class BodyClass
 			{
 				$output = $output . "<div style='background: #4CAF50'>
 							<h2><a href='http://micro-blog.dev/api/posts/id/" . $jsonArray[$i]['rowid'] ."'>" . $jsonArray[$i]['content'] . "</a></h2>
-							<h5><a href='http://micro-blog.dev/api/posts/user/" . $jsonArray[$i]['user_id'] ."'>" . $jsonArray[$i]['user_id'] . "</a></h5>
-							<h5>" . $jsonArray[$i]['date'] . "</h5>";
+							<h5><a href='http://micro-blog.dev/api/posts/user/" . $jsonArray[$i]['user_id'] ."'>" . $jsonArray[$i]['user_id'] . "</a></h5>";
 				if($session->get('logged_in') !== null)
 				{
 					$output = $output . "<form action = 'http://micro-blog.dev/api/edit/id/" . $jsonArray[$i]['rowid'] . "' style='float:right;' method= 'post'>
 								<input type = 'submit' value = 'Edit Post'>
 							    </form>";
 				}
-				$output = $output . "</div><br/>";
+				$output = $output . "<h5>" . $jsonArray[$i]['date'] . "</h5></div><br/>";
 			}
 		}
 		else if(strcasecmp(substr($uri, strpos($uri, "/"), strrpos($uri, "/")), '/api/posts/id') == 0)
@@ -54,7 +53,7 @@ class BodyClass
 		}
 		else if(strcasecmp(substr($uri, strpos($uri, "/"), strrpos($uri, "/")), '/api/edit/id') == 0)
 		{
-			$output = $output . $response . "<div>
+			$output = $output . "<div>
 						<h3>Please Edit Your Post : </h3><br/>
 						<form action='http://micro-blog.dev/api/edit/id/" . $response['rowid'] . "' method='post'>
 							<textarea rows='12' cols='70' name='content' wrap='hard' style = 'resize: none'>". $response['content'] . "</textarea><br/>
@@ -74,12 +73,13 @@ class BodyClass
 			$session->set('user', 'flag');
 			for($i = 0; $i < count($jsonArray); $i++)
 			{
-				$output = $output . "<span style='background: #4CAF50'>
+				$output = $output . "<div style='background: #4CAF50'><span>
 							<h2><a href='http://micro-blog.dev/api/posts/id/" . $jsonArray[$i]['rowid'] ."'>" . $jsonArray[$i]['content'] . "</a></h2>
 							<h5><a href='http://micro-blog.dev/api/posts/user/" . $jsonArray[$i]['user_id'] ."'>" . $jsonArray[$i]['user_id'] . "</a></h5>
+							<a href = 'http://micro-blog.dev/api/posts/delete/" . $jsonArray[$i]['rowid'] . "'><input type = 'button' style = 'float:right' value = 'Delete' /></a>
 							<h5>" . $jsonArray[$i]['date'] . "</h5>
 						    </span>
-						    <span><a href = 'http://micro-blog.dev/api/posts/delete/" . $jsonArray[$i]['rowid'] . "'><input type = 'button' style = 'float:right' value = 'Delete' /></a></span>";
+						    <span></span></div><br/>";
 			}
 		}
 		else
