@@ -37,6 +37,7 @@ function editBlogPost()
     document.getElementById("update-blog").submit();
 }
 
+//in the blog edit and post page trying to count the number of characters typed to show
 function countChar(val)
 {
 	var len = val.value.length;

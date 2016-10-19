@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 require_once 'HeaderClass.class.php';
 require_once 'BodyClass.class.php';
 
+//start a session for current user if it is not started already
 $session = new Session();
 if(!$session->isStarted())
 {
@@ -45,7 +46,6 @@ TODO: Error checking - e.g. if try retrieve posts for a user_id that does
 */
 
 //create users table is it doesn't exist
-
 $schema = $app['db']->getSchemaManager();
 if (!$schema->tablesExist('users'))
 {
@@ -58,35 +58,58 @@ if (!$schema->tablesExist('users'))
 	$schema->createTable($users);
 }
 
+//endpoint to see all the blogs available to read
 $app->get('/api/posts', function() use($app)
 {
+	//get all the posts from db and return the array of json object of them
 	$sql = "SELECT rowid, * FROM posts order by date desc";
 	$posts = $app['db']->fetchAll($sql);
 	return $app->json($posts, 200);
 });
 
+//endpoint to see all the blogs posted by user_id
 $app->get('/api/posts/user/{user_id}', function($user_id) use($app, $session)
 {
+	// get all the blog posted by $user_id and store in $posts
 	$headerInstance = new HeaderClass();
 	$header = $headerInstance->getPageHeader($session);
 	$sql = "SELECT rowid, * FROM posts WHERE user_id = ?  order by date desc";
 	$posts = $app['db']->fetchAll($sql, array((int) $user_id));
-	$bodyInstance = new BodyClass();
-	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
-	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	//if there are elements in $posts, render else "No posts to show by"
+	if(count($posts) > 0)
+	{
+		$bodyInstance = new BodyClass();
+		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
+		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	}
+	else
+	{
+		return $app['twig']->render('index.twig', array('header' => $header, 'body' => "<h1>No posts to show by " . $user_id . "</h1>"));
+	}
 });
 
+//endpoind to view a particular blog
 $app->get('/api/posts/id/{post_id}', function($post_id) use($app, $session)
 {
+	//fetch the blog's details from db having rowid = $post_id
 	$headerInstance = new HeaderClass();
 	$header = $headerInstance->getPageHeader($session);
 	$sql = "SELECT rowid, * FROM posts WHERE rowid = ?  order by date desc";
 	$post = $app['db']->fetchAssoc($sql, array((int) $post_id));
-	$bodyInstance = new BodyClass();
-	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post, $session);
-	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	//if blog exists render else "No such Blog"
+	if($post != null)
+	{
+		$bodyInstance = new BodyClass();
+		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post, $session);
+		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
+	}
+	else
+	{
+		return $app['twig']->render('index.twig', array('header' => $header, 'body' => "<h1>No such Blog</h1>"));
+	}
 });
 
+//endpoint is to register to the micro-blog.dev as a user. after getting the username and password in the request try to insert the record in the table if insertion fails that means user already exists and return the error page content. stor the md5 hash of the password for security purpose
 $app->post('/api/register', function (Request $request) use($app, $session)
 {
 	$username = $_POST["usernameValue"];
@@ -109,6 +132,19 @@ $app->post('/api/register', function (Request $request) use($app, $session)
 	}
 });
 
+//endpoint is used to login micro-blog.dev. try to fetch user details using username passed in the request. here post request is used because of the transportation of sensitive data.
+/*
+if query execution = success
+	if(username or password in db is not null)
+		if(username and password are validated successfully)
+			set session variables and redirect to homepage
+		else
+			return "incorrect password"
+	else
+		return "user doesn't exist"
+else
+	return runtime execption
+*/ 
 $app->post('/api/login', function (Request $request) use($app, $session)
 {
 	$username = $_POST["usernameValue"];
@@ -148,6 +184,13 @@ $app->post('/api/login', function (Request $request) use($app, $session)
 	}
 });
 
+/*
+a new blog post requests is basically consists of two requests. there are so many otherways to do this but I thought ib this way I don't have to create seperate html or php
+1. to render the empty textarea to get provide a platform to user to enter data
+2. to store the data and metadata entered by user in the db
+both are done in the same endpoint by using $_POST['content']
+$_POST['content'] is initially null and is set to some value when the request is to store in the db
+*/
 $app->post('/api/posts/new', function (Request $request) use($app, $session)
 {
 	if($_POST['content'] == null || strcmp(trim($_POST['content']), '') == 0)
@@ -168,6 +211,9 @@ $app->post('/api/posts/new', function (Request $request) use($app, $session)
 	}
 });
 
+/*
+endpoint is used to enable the user to edit the blog whic are "only posted by themselves" similar as above one, this uri shouldn't be triggered directly because it is post
+*/
 $app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session)
 {
 	$headerInstance = new HeaderClass();
@@ -187,6 +233,10 @@ $app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session)
 		return $app->redirect('/api/posts/id/' . $post_id);
 	}
 });
+
+/*
+endpoint is used to enable the user to delete the blog whic are "only posted by themselves" similar as above
+*/
 
 $app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session)
 {
@@ -210,12 +260,14 @@ $app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session)
 	}
 });
 
+//destroy all the session properties
 $app->get('/api/logout', function() use($app, $session)
 {
 	session_unset();
 	return $app->redirect('/');
 });
 
+//homepage lists all the blogs posted
 $app->get('/', function() use($app, $session)
 {
    	$headerInstance = new HeaderClass();

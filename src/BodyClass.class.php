@@ -3,6 +3,7 @@ class BodyClass
 {
 	public function getPageBody($uri, $response, $session)
 	{
+		//prepare the html and content for main-div in index.twig. the html body content is prepared here and then returned to index.php and pated to index.twig on the basis of the uri requested.
 		if(strcasecmp($uri, '/') == 0 || strcasecmp($uri, '/api/posts') == 0)
 		{
 			$response = "" . $response;

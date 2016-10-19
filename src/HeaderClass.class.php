@@ -3,6 +3,7 @@ class HeaderClass
 {
     public function getPageHeader($session)
     {
+	// responsible for rendering header and footer. header is judged by checking whether the user is loggedin or not. if he/she is logged in then user is eligible for operations which are shown in the menu
         if($session->get('logged_in') !== null)
         {
 			$output = "<div class='dropdown'>
