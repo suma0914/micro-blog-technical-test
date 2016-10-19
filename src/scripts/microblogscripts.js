@@ -28,3 +28,13 @@ function comparePasswords()
 		return false;
 	}
 }
+
+function newBlogPost()
+{
+    document.getElementById("post-blog").submit();
+}
+
+function editBlogPost()
+{
+    document.getElementById("update-blog").submit();
+}
