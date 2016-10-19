@@ -7,10 +7,10 @@ class HeaderClass
         if($session->get('logged_in') !== null)
         {
 		$output = "<div class='dropdown'>
-				<button class='btn btn-default dropdown-toggle' type='button' id='menu1' data-toggle='dropdown' style='float:right'>Tutorials
+				<button class='button header' btn-default dropdown-toggle' type='button' id='menu1' data-toggle='dropdown' style='float:right'>Account
 		<span class='caret'/>
 	</button>
-	<br/>
+	<br/><br/>
 	<ul class='dropdown-menu dropdown-menu-right' role='menu' aria-labelledby='menu1'>
 		<li role='presentation'>
 			<a role='menuitem' tabindex='-1' href='http://micro-blog.dev/'>Home</a>

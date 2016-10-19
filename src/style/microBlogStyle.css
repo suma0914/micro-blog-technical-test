@@ -1,4 +1,4 @@
-.button {
+.button{
     background-color: #4CAF50;
     border: none;
     color: white;
@@ -13,6 +13,23 @@
     -sswebkit-border-radius: 4px;
     border-radius: 4px;
 }
+
+.small-button{
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -moz-border-radius: 4px;
+    -sswebkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
 
 .header{float: right;}
 
@@ -33,9 +50,9 @@ div {
     top: 50%;
     left: 50%;
     width:17em;
-    height:20em;
+    height:22em;
     margin-top: -9em; /*set to a negative number 1/2 of your height*/
-    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+    margin-left: -11em; /*set to a negative number 1/2 of your width*/
     /*border: 1px solid #ccc;*/
     background-color: #f3f3f3;
     visibility:hidden;

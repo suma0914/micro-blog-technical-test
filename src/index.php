@@ -73,7 +73,7 @@ if (!$schema->tablesExist('users'))
 
 
 $app->get('/api/posts', function() use($app) {
-    $sql = "SELECT rowid, * FROM posts";
+    $sql = "SELECT rowid, * FROM posts order by date desc";
     $posts = $app['db']->fetchAll($sql);
 
     return $app->json($posts, 200);
@@ -82,7 +82,7 @@ $app->get('/api/posts', function() use($app) {
 $app->get('/api/posts/user/{user_id}', function($user_id) use($app, $session) {
     $headerInstance = new HeaderClass();
     $header = $headerInstance->getPageHeader($session);
-    $sql = "SELECT rowid, * FROM posts WHERE user_id = ?";
+    $sql = "SELECT rowid, * FROM posts WHERE user_id = ?  order by date desc";
     $posts = $app['db']->fetchAll($sql, array((int) $user_id));
     $bodyInstance = new BodyClass();
     $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
@@ -92,7 +92,7 @@ $app->get('/api/posts/user/{user_id}', function($user_id) use($app, $session) {
 $app->get('/api/posts/id/{post_id}', function($post_id) use($app, $session) {
     $headerInstance = new HeaderClass();
     $header = $headerInstance->getPageHeader($session);
-    $sql = "SELECT rowid, * FROM posts WHERE rowid = ?";
+    $sql = "SELECT rowid, * FROM posts WHERE rowid = ?  order by date desc";
     $post = $app['db']->fetchAssoc($sql, array((int) $post_id));
     $bodyInstance = new BodyClass();
     $body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $post, $session);
@@ -202,9 +202,9 @@ $app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session) 
 	$headerInstance = new HeaderClass();
 	$header = $headerInstance->getPageHeader($session);
 	$bodyInstance = new BodyClass();
-	if($session->get('user') == null)
+	if($session->get('flag') == null)
 	{
-		$sql = "SELECT rowid, * FROM posts WHERE user_id = ?";
+		$sql = "SELECT rowid, * FROM posts WHERE user_id = ?  order by date desc";
     		$posts = $app['db']->fetchAll($sql, array((int) $user_id));
 		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
 		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
@@ -214,7 +214,7 @@ $app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session) 
 		$sql = "delete FROM posts WHERE rowid = :id";
 		$preparedStatement = $app['db']->prepare($sql);
 		$preparedStatement->execute(array(':id' => $user_id));
-		$session->set('user', null);
+		$session->set('flag', null);
 		return $app->redirect('/api/posts/delete/' . $session->get('user_id'));
 	}
 });
@@ -247,7 +247,6 @@ $app->get('/', function() use($app, $session) {
 	$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $response, $session);
   	return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 });
-
 
 $app->run();
 ?>

@@ -38,3 +38,12 @@ function editBlogPost()
 {
     document.getElementById("update-blog").submit();
 }
+
+function countChar(val) {
+        var len = val.value.length;
+        if (len >= 20) {
+          val.value = val.value.substring(0, 500);
+        } else {
+          $('#content').text(20- len);
+        }
+      };

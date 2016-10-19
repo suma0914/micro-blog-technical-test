@@ -9,6 +9,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="http://micro-blog.dev/scripts/microblogscripts.js"></script>
+    <script src="http://code.jquery.com/jquery-1.5.js"></script>
     <!--
      - Include you stylesheets and javascripts in here
      - Load from /assets/javascripts and /assets/stylesheets  
@@ -18,20 +19,20 @@
   </head>
   <body>
 	<div class="container-fluid" id='main-div'>
-		<header>
+		<header id='head'>
 			{{ header | raw }}
 		</header>
 		{{ body | raw }}
-		<footer>mico-blog.dev</footer>
+		<footer id='foot'>mico-blog.dev</footer>
 	</div>
 	<div id='register-dialog' title='Register' style = 'visibility:hidden'>
 		<form onsubmit = 'return comparePasswords()' action = 'http://micro-blog.dev/api/register' method='post'>
 			<h5 id = 'username'>*Username</h5>&nbsp;&nbsp;<input type = 'text' id = 'usernameValue' name = 'usernameValue'/><br/>
 			<h5 id = 'password'>*Password</h5>&nbsp;&nbsp;<input type = 'password' id = 'passwordValue' name = 'passwordValue'/><br/>
-			<h5 id = 'passwordRepeat'>*Repeat Password</h5>&nbsp;&nbsp;<input type = 'password' id = 'passwordRepeatValue'/><br/><br/>
+			<h5 id = 'passwordRepeat'>*Repeat Password</h5>&nbsp;&nbsp;<input type = 'password' id = 'passwordRepeatValue'/>
 			<h6 id = 'error' style = "visibility:hidden; color:red;">* Please enter correct passwords</h6>
-			<input type = 'submit' value = 'Submit'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href = 'http://micro-blog.dev/'><input type = 'button' value = 'Cancel'/></a><br/>
+			<input type = 'submit' value = 'Submit' class='small-button'/>&nbsp;&nbsp;&nbsp;
+			<a href = 'http://micro-blog.dev/'><input type = 'button' value = 'Cancel' class='small-button'/></a><br/>
 		</form>
 	</div>
 	<div id='login-dialog' title='Login' style = 'visibility:hidden'>
@@ -39,8 +40,8 @@
 			<h5 id = 'username'>*Username</h5>&nbsp;&nbsp;<input type = 'text' id = 'usernameValue' name = 'usernameValue'/><br/>
 			<h5 id = 'password'>*Password</h5>&nbsp;&nbsp;<input type = 'password' id = 'passwordValue' name = 'passwordValue'/><br/>
 			<h6 id = 'error' style = "visibility:hidden; color:red;">* Please enter correct passwords</h6>
-			<input type = 'submit' value = 'Submit'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href = 'http://micro-blog.dev/'><input type = 'button' value = 'Cancel'/></a><br/>
+			<input type = 'submit' value = 'Submit' class='small-button'/>&nbsp;&nbsp;&nbsp;
+			<a href = 'http://micro-blog.dev/'><input type = 'button' value = 'Cancel' class='small-button'/></a><br/>
 		</form>
 	</div>
 	
