@@ -112,13 +112,13 @@ $app->get('/api/posts/id/{post_id}', function($post_id) use($app, $session)
 //endpoint is to register to the micro-blog.dev as a user. after getting the username and password in the request try to insert the record in the table if insertion fails that means user already exists and return the error page content. stor the md5 hash of the password for security purpose
 $app->post('/api/register', function (Request $request) use($app, $session)
 {
-	$username = $_POST["usernameValue"];
-	$password = md5($_POST["passwordValue"]);
+	$username = strip_tags($_POST["usernameValue"]);
+	$password = md5(strip_tags($_POST["passwordValue"]));
 	$sql = "SELECT * FROM users WHERE username = ?";
 	$user = $app['db']->fetchAll($sql, array((int) $username));
 	try
 	{
-		$app['db']->insert('users', array('username' => $username, 'password' => $password));
+		$app['db']->insert('users', array('username' => strip_tags($username), 'password' => strip_tags($password)));
 		$session->set('user', $username);
 		$session->set('user_id', $user['id']);
 		$session->set('logged_in', 1);
@@ -147,8 +147,8 @@ else
 */ 
 $app->post('/api/login', function (Request $request) use($app, $session)
 {
-	$username = $_POST["usernameValue"];
-	$password = md5($_POST["passwordValue"]);
+	$username = strip_tags($_POST["usernameValue"]);
+	$password = md5(strip_tags($_POST["passwordValue"]));
 	$sql = "SELECT * FROM users WHERE username = ?";
 	$user = $app['db']->fetchAssoc($sql, array((string) $username));
 	try
@@ -204,7 +204,7 @@ $app->post('/api/posts/new', function (Request $request) use($app, $session)
 	else
 	{
 		$time = date_timestamp_get(date_create());
-		$app['db']->insert('posts', array('content' => $_POST['content'], 'user_id' => $session->get('user_id'), 'date' => "" . $time));
+		$app['db']->insert('posts', array('content' => strip_tags($_POST['content']), 'user_id' => $session->get('user_id'), 'date' => "" . $time));
 		$sql = "SELECT rowid FROM posts WHERE date = ?";
    		$post = $app['db']->fetchAssoc($sql, array((string) $time));
 		return $app->redirect('/api/posts/id/' . $post['rowid']);
@@ -229,7 +229,7 @@ $app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session)
 	else
 	{
 		$sql = "update posts set content = ? where rowid = ?";
-		$posts = $app['db']->executeQuery($sql, array((string) $_POST['content'], (string) $post_id));
+		$posts = $app['db']->executeQuery($sql, array((string) strip_tags($_POST['content']), (string) $post_id));
 		return $app->redirect('/api/posts/id/' . $post_id);
 	}
 });

@@ -40,12 +40,10 @@ function editBlogPost()
 function deleteBlogPost()
 {
     document.getElementById("delete-blog").submit();
-alert('knc');
 }
 
 function deleteBlogPost1()
 {
-alert('kvsvnc');
     document.getElementById("blog-delete").submit();
 }
 
