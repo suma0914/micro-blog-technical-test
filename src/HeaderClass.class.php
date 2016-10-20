@@ -21,7 +21,7 @@ class HeaderClass
 								<a role='menuitem' tabindex='-1' onclick='editBlogPost()'><form id='update-blog' action='http://micro-blog.dev/api/posts/user/" . $session->get('user_id') . "'>Update Your Blog</form></a>
 							</li>
 							<li role='presentation'>
-								<a role='menuitem' tabindex='-1' href='http://micro-blog.dev/api/posts/delete/" . $session->get('user_id') . "' >Delete Blogs</a>
+								<a role='menuitem' tabindex='-1' onclick='deleteBlogPost()'><form method='post' id='delete-blog' action='http://micro-blog.dev/api/posts/delete/" . $session->get('user_id') . "'>Delete Blogs</form></a>
 							</li>
 							<li role='presentation'>
 								<a role='menuitem' tabindex='-1' href='http://micro-blog.dev/api/logout'>Logout</a>

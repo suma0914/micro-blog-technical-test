@@ -76,11 +76,10 @@ class BodyClass
 			{
 				$output = $output . "<div style='background: #C0C0C0'><span>
 							<h2>Read Blog Here - <a href='http://micro-blog.dev/api/posts/id/" . $jsonArray[$i]['rowid'] ."'>" . substr($jsonArray[$i]['content'], 0, 25) . "</a></h2>
-							<a href = 'http://micro-blog.dev/api/posts/delete/" . $jsonArray[$i]['rowid'] . "'><input class='small-button' type = 'button' style = 'float:right' value = 'Delete' /></a>
 							<h5>Author - <a href='http://micro-blog.dev/api/posts/user/" . $jsonArray[$i]['user_id'] ."'>" . $jsonArray[$i]['user_id'] . "</a></h5>
 							<h5>" . gmdate("Y-m-d\TH:i:s\Z", $jsonArray[$i]['date']) . "</h5>
 							</span>
-							<span></span></div><br/>";
+							<span></span></div><br/><form id='delete-blog' action='http://micro-blog.dev/api/posts/delete/" . $jsonArray[$i]['rowid'] . "'  method='post'><input type='submit' value='Delete'/></form>";
 			}
 		}
 		else

@@ -37,6 +37,18 @@ function editBlogPost()
     document.getElementById("update-blog").submit();
 }
 
+function deleteBlogPost()
+{
+    document.getElementById("delete-blog").submit();
+alert('knc');
+}
+
+function deleteBlogPost1()
+{
+alert('kvsvnc');
+    document.getElementById("blog-delete").submit();
+}
+
 //in the blog edit and post page trying to count the number of characters typed to show
 function countChar(val)
 {

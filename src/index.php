@@ -238,7 +238,7 @@ $app->post('/api/edit/id/{post_id}', function($post_id) use($app, $session)
 endpoint is used to enable the user to delete the blog whic are "only posted by themselves" similar as above
 */
 
-$app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session)
+$app->post('/api/posts/delete/{user_id}', function(Request $request, $user_id) use($app, $session)
 {
 	$headerInstance = new HeaderClass();
 	$header = $headerInstance->getPageHeader($session);
@@ -246,7 +246,7 @@ $app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session)
 	if($session->get('flag') == null)
 	{
 		$sql = "SELECT rowid, * FROM posts WHERE user_id = ?  order by date desc";
-    	$posts = $app['db']->fetchAll($sql, array((int) $user_id));
+    		$posts = $app['db']->fetchAll($sql, array((int) $user_id));
 		$body = $bodyInstance->getPageBody($_SERVER['REQUEST_URI'], $app->json($posts, 200), $session);
 		return $app['twig']->render('index.twig', array('header' => $header, 'body' => $body));
 	}
@@ -256,7 +256,8 @@ $app->get('/api/posts/delete/{user_id}', function($user_id) use($app, $session)
 		$preparedStatement = $app['db']->prepare($sql);
 		$preparedStatement->execute(array(':id' => $user_id));
 		$session->set('flag', null);
-		return $app->redirect('/api/posts/delete/' . $session->get('user_id'));
+		$subRequest = Request::create('/api/posts/delete/' . $session->get('user_id'), 'POST');
+		return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
 	}
 });
 
